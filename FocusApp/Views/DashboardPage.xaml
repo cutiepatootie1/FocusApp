@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FocusApp.ViewModels"
+             xmlns:models="clr-namespace:FocusApp.Models"
+             xmlns:behaviors="clr-namespace:FocusApp.Behaviors"
+             xmlns:components="clr-namespace:FocusApp.Views.Components"
+             x:Class="FocusApp.Views.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
+            Title="Dashboard">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Grid Grid.RowSpan="2"
+      IsVisible="{Binding IsAppPickerVisible}"
+      BackgroundColor="#99000000"
+      ZIndex="99">
+
+            <Border BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+            StrokeShape="RoundRectangle 20"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            WidthRequest="{OnIdiom Phone=350, Desktop=500}"
+            HeightRequest="{OnIdiom Phone=500, Desktop=600}"
+            Padding="20">
+
+                <Grid RowDefinitions="Auto, *, Auto">
+                    <Label Grid.Row="0" Text="Select an App" FontSize="20" FontAttributes="Bold" Margin="0,0,0,10"/>
+
+                    <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding DetectedApps}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:InstalledApp">
+                                <Grid ColumnDefinitions="50, *" Padding="10">
+
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=SelectAppCommand}"
+                                                      CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
+
+                                    <Image Grid.Column="0" Source="{Binding Icon}" HeightRequest="40" WidthRequest="40" />
+
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="10,0,0,0">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                        <Label Text="{Binding PackageId}" FontSize="10" TextColor="Gray" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Button Grid.Row="2" Text="Cancel" Command="{Binding CloseAppPickerCommand}" Margin="0,10,0,0" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <BoxView Grid.Row="0" Color="#512BD4" HeightRequest="150" VerticalOptions="Start" />
+
+        <ScrollView Grid.Row="0" Grid.RowSpan="2">
+
+            <Grid RowDefinitions="Auto, Auto, *" Padding="{OnIdiom Phone='20', Desktop='40'}">
+
+                <VerticalStackLayout Grid.Row="0" Spacing="20" Margin="0,0,0,30">
+                    <Label Text="Ready to Focus?" 
+                           TextColor="White" 
+                           FontSize="28" 
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+
+                    <components:FocusToggleView />
+                </VerticalStackLayout>
+
+
+                <FlexLayout Grid.Row="1" 
+                            Direction="Row" 
+                            Wrap="Wrap" 
+                            JustifyContent="SpaceBetween" 
+                            AlignItems="Start">
+
+                    <Border StrokeShape="RoundRectangle 15"
+                            StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                            Padding="25"
+                            Margin="0,0,0,20"
+                            FlexLayout.Basis="{OnIdiom Phone='100%', Desktop='40%'}">
+
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Opacity="0.05" Offset="0,4" Radius="10"/>
+                        </Border.Shadow>
+
+                        <VerticalStackLayout Spacing="20">
+                            <Label Text="Add Blocked Item" FontSize="18" FontAttributes="Bold" />
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Website URL" FontSize="12" TextColor="Gray" />
+                                <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333}" 
+                                        StrokeThickness="1" 
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="10,0">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Entry 
+                                               x:Name="urlEntry"
+                                               Text="{Binding NewUrlInput}" 
+                                               Placeholder="facebook.com"
+                                               TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                               HeightRequest="45" 
+                                               Grid.Column="0" />
+
+                                        <Button Grid.Column="1"
+                                                Text="ADD"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                TextColor="#512BD4"
+                                                BackgroundColor="Transparent"
+                                                Command="{Binding AddWebsiteCommand}"
+                                                behaviors:Cursor.Style="Hand"/>
+                                    </Grid>
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Application Name" FontSize="12" TextColor="Gray" />
+                                <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333}" 
+                                        StrokeThickness="1" 
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="10,0">
+                                    <Button Text="Select App from List..."
+                                    Command="{Binding OpenAppPickerCommand}"
+                                    BackgroundColor="{AppThemeBinding Light=#E0E0E0, Dark=#333}"
+                                    TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                    CornerRadius="8"
+                                    HeightRequest="45" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+
+                    <Border StrokeShape="RoundRectangle 15"
+                            StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                            Padding="0"
+                            Margin="{OnIdiom Phone='0,0,0,50', Desktop='20,0,0,50'}"
+                            FlexLayout.Basis="{OnIdiom Phone='100%', Desktop='55%'}">
+
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Opacity="0.05" Offset="0,4" Radius="10"/>
+                        </Border.Shadow>
+
+                        <Grid RowDefinitions="Auto, *">
+                            <Label Grid.Row="0" 
+                                   Text="Active Block List" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold" 
+                                   Padding="25,20,25,10"/>
+
+                            <CollectionView Grid.Row="1" 
+                                            ItemsSource="{Binding BlockedItems}"
+                                            HeightRequest="{OnIdiom Phone=300, Desktop=400}"
+                                            SelectionMode="None">
+
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:BlockedItems">
+                                        <Grid ColumnDefinitions="50, *, Auto" Padding="15,10">
+
+                                            <Border Grid.Column="0" 
+                                                    StrokeShape="RoundRectangle 10" 
+                                                    HeightRequest="40" 
+                                                    WidthRequest="40"
+                                                    BackgroundColor="#F0F0F0"
+                                                    StrokeThickness="0">
+                                                <Label Text="{Binding ItemType, Converter={StaticResource TypeToIconConverter}}" 
+                                                       FontFamily="MaterialSymbols"
+                                                       TextColor="#555"
+                                                       FontSize="20"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"/>
+                                            </Border>
+
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0" Margin="10,0">
+                                                <Label Text="{Binding Name}" FontSize="15" />
+                                                <Label Text="{Binding ItemType}" FontSize="11" TextColor="Gray"/>
+                                            </VerticalStackLayout>
+
+                                            <Button Grid.Column="1"
+                                                    Text="&#xe872;" 
+                                                    FontFamily="MaterialSymbols"
+                                                    FontSize="20"
+                                                    TextColor="#FF5252"
+                                                    BackgroundColor="Transparent"
+                                                    behaviors:Cursor.Style="Hand"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=RemoveItemCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+
+                                <CollectionView.EmptyView>
+                                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="50">
+                                        <Label Text="&#xe888;" FontFamily="MaterialSymbols" FontSize="40" TextColor="#CCC" HorizontalOptions="Center"/>
+                                        <Label Text="No distractions blocked yet." TextColor="Gray" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </CollectionView.EmptyView>
+                            </CollectionView>
+                        </Grid>
+                    </Border>
+                </FlexLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>
